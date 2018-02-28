@@ -9,14 +9,14 @@ from m3u8 import download_movie
 strUrl = 'http://wap.precn.cn'
 
 def get_m3u8(m3u8):
-    print(m3u8)
+    # print(m3u8)
     DataM3U8 = requests.get(strUrl+m3u8['Link']).text
     DataM3U8_Cut = DataM3U8.split('unescape(')[1]
     DataM3U8_Cut = DataM3U8_Cut.split(')')[0]
     #url解码，对java的escape格式解码，原码为%Uxxxx，先换为\uxxxx，然后转换为bytes，然后解码为escape格式
     DataM3U8_Cut = DataM3U8_Cut.replace('%u','\\u')
     DataM3U8_Cut = urllib.parse.unquote_to_bytes(DataM3U8_Cut).decode('unicode-escape')
-    print(DataM3U8_Cut)
+    # print(DataM3U8_Cut)
     #对于拥有两个以下下载源的，创建下载清单
     downList = []
     i = 0
@@ -134,10 +134,7 @@ def movie_list(url):
 
 def run():
     #获取网页地址
-    str_url = input('请输入网页链接地址')
-    #暂时先将地址预设，使用简单输入判断
-    if str_url == 'a':
-        str_url = strUrl+'/?a=1'
+    str_url = strUrl+'/?a=1'
     #此处应有是否为网页判断，暂无
     #列出电影项目以供选择
     movie_list(str_url)
