@@ -1,28 +1,22 @@
 # -*- coding: utf-8 -*-
 
 import requests
-import progressbar
 import requests.packages.urllib3
 import os
-from  m3u8 import multiThreadDownload
 
 def download(dict,path):
     requests.packages.urllib3.disable_warnings()
-
-    url = dict['Link']
-
-    total_length = int(requests.head(url).headers['Content-Length'])
-
-    # response = requests.request("GET", url, stream=True, data=None, headers=None)
-    response = requests.get(url, stream=True)
-
+    #设定文件保存地址
     save_path = os.path.dirname(os.path.abspath(__file__))+ path +os.path.basename(dict['Link'])
     print(os.path.abspath(save_path))
 
-    # response = requests.get(url)
-    # with open(save_path, "wb") as code:
-    #     code.write(response.content)
+    url = dict['Link']
+    #获取文件大小，不取文件，直接获取头
+    total_length = int(requests.head(url).headers['Content-Length'])
 
+    #以stream为True方式，暂停下载，与下面的chunk联合使用即可
+    response = requests.get(url, stream=True)
+    #设定chunk大小，以便监督进度
     kilobytes = 1024
     megabytes = kilobytes * 1000
     chunksize = int(1 * megabytes)
@@ -30,6 +24,7 @@ def download(dict,path):
 
     with open(save_path, 'wb') as f:
         i = 0
+        #按chunk大小下载，同时更新进度，与前面的request的stream结合使用
         for chunk in response.iter_content(chunk_size=chunksize):
             if chunk:
                 f.write(chunk)
@@ -37,19 +32,6 @@ def download(dict,path):
             i += 1
             print("进度:%s/%s"%(i,N))
     f.close()
-
-
-    # with open(save_path, 'wb') as f:
-    #     widgets = ['Progress: ', progressbar.Percentage(), ' ',
-    #                progressbar.Bar(marker='#', left='[', right=']'),
-    #                ' ', progressbar.ETA(), ' ', progressbar.FileTransferSpeed()]
-    #     pbar = progressbar.ProgressBar(widgets=widgets, maxval=int(total_length/chunksize)).start()
-    #     for chunk in response.iter_content(chunk_size=chunksize):
-    #         if chunk:
-    #             f.write(chunk)
-    #             f.flush()
-    #         pbar.update(len(chunk) + 1)
-    #     pbar.finish()
 
 
 
@@ -69,7 +51,5 @@ def m3u8(dict):
 def other(dict):
     strpath = '/download/other/'
     print(dict,strpath)
-    # print(dict['Link'])
-    # multiThreadDownload.main(dict['Link'])
     download(dict,strpath)
 
