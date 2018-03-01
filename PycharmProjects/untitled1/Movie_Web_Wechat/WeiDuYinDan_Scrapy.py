@@ -96,7 +96,12 @@ def listMovie(list):
     if user_option == '': listMovie(list)
     if int(user_option) <= len(list) :
         #爬m3u8出来，并写入文件夹与文件，另开def
-        get_movie_m3u8(list[int(user_option)-1])
+        if user_option == '1':
+            searchkey = input('>>>搜索>>>：')
+            searchurl = 'http://wap.precn.cn/index.php?m=vod-search-wd-'+searchkey+'.html'
+            movie_list(searchurl)
+        else:
+            get_movie_m3u8(list[int(user_option)-1])
     else:
         print("\033[31;1m选择不存在!\033[0m")
     return
@@ -109,8 +114,16 @@ def movie_list(url):
     #查找所有tag为span的文件
     chooseTag = None
     span = soup.find_all('span')
+    #用于正常
     for child in span:
         if child.string == '最新电影':
+            chooseTag = child
+            break
+    #用于搜索
+    for child in span:
+        childstring = str(child.string)
+        print(childstring)
+        if '搜索结果' in childstring:
             chooseTag = child
             break
     #判断有无值
